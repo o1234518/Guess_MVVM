@@ -7,48 +7,48 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var guessNumber: Guess
+    private lateinit var viewModel: GuessViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById(R.id.toolbar))
 
-        guessNumber = Guess()
+        viewModel = ViewModelProvider(this).get(GuessViewModel::class.java)
+
+        viewModel.counter.observe(this, Observer { data ->
+            tv_counter.setText(data.toString())
+        })
+
+        viewModel.result.observe(this, Observer { result ->
+            val message = when(result) {
+                GameResult.BINGO -> "Bingo!!"
+                GameResult.BIGGER -> "Your number too small."
+                GameResult.SMALLER -> "Your number too big."
+            }
+
+            AlertDialog.Builder(this)
+                .setTitle("System message")
+                .setMessage(message)
+                .setPositiveButton("OK", null)
+                .show()
+        })
 
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
-            guessNumber.refresh()
-            tv_counter.text = guessNumber.counter.toString()
+            viewModel.reset()
         }
 
         btn_guess_number.setOnClickListener {
             var number = ed_guess_number.text.toString().toInt()
-            checkNumber(number)
-            guessNumber.counter++
-            tv_counter.text = guessNumber.counter.toString()
+            viewModel.guess(number)
         }
 
-    }
-
-    fun checkNumber(number:Int){
-        var check = guessNumber.secretNumber - number
-        var message = ""
-        if (check > 0) {
-            message = "your number too small"
-        } else if (check < 0) {
-            message = "your number too big"
-        } else if (check == 0) {
-            message ="bingo"
-        }
-        AlertDialog.Builder(this)
-            .setTitle("System message")
-            .setMessage(message)
-            .setPositiveButton("OK", null)
-            .show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
