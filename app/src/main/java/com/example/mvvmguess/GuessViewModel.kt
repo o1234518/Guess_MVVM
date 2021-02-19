@@ -13,6 +13,7 @@ class GuessViewModel: ViewModel() {
     val result = MutableLiveData<GameResult>()
 
     init {
+        Log.i(TAG, "init");
         reset()
         counter.value = count
     }

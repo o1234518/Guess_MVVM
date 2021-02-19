@@ -9,4 +9,11 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="game_result_bingo">Bingo!!</string>
+    <string name="game_result_bigger">Your number too small.</string>
+    <string name="game_result_smaller">Your number too big.</string>
+    <string name="system_message">System message</string>
+    <string name="ok">OK</string>
+    <string name="do_you_want_replay">Do you want replay?</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -1,19 +1,22 @@
 package com.example.mvvmguess
 
+import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
+    private val REQUEST_CODE = 100
     private lateinit var viewModel: GuessViewModel
+    private val TAG = MainActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,16 +30,22 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.result.observe(this, Observer { result ->
-            val message = when(result) {
-                GameResult.BINGO -> "Bingo!!"
-                GameResult.BIGGER -> "Your number too small."
-                GameResult.SMALLER -> "Your number too big."
+            val message = when (result) {
+                GameResult.BINGO -> getString(R.string.game_result_bingo)
+                GameResult.BIGGER -> getString(R.string.game_result_bigger)
+                GameResult.SMALLER -> getString(R.string.game_result_smaller)
             }
 
             AlertDialog.Builder(this)
-                .setTitle("System message")
+                .setTitle(getString(R.string.system_message))
                 .setMessage(message)
-                .setPositiveButton("OK", null)
+                .setPositiveButton(getString(R.string.ok), {dialog, which ->
+                    if(result == GameResult.BINGO) {
+                        val intent = Intent(this, RecordActivity::class.java)
+                        intent.putExtra("RECORD", viewModel.count)
+                        startActivityForResult(intent, REQUEST_CODE)
+                    }
+                })
                 .show()
         })
 
@@ -49,6 +58,35 @@ class MainActivity : AppCompatActivity() {
             viewModel.guess(number)
         }
 
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                //use apply . also
+                AlertDialog.Builder(this).apply {
+                    setTitle(getString(R.string.system_message))
+                    setMessage(getString(R.string.do_you_want_replay))
+                    setNegativeButton(getString(R.string.ok), {dialog, which ->
+                        viewModel.reset()
+                    })
+                    setPositiveButton(getString(R.string.cancel), null)
+                }.also { builder ->
+                    builder.show()
+                }
+
+                //original
+//                AlertDialog.Builder(this)
+//                    .setTitle(getString(R.string.system_message))
+//                    .setMessage(getString(R.string.do_you_want_replay))
+//                    .setNegativeButton(getString(R.string.ok), {dialog, which ->
+//                        viewModel.reset()
+//                    })
+//                    .setPositiveButton(getString(R.string.cancel), null)
+//                    .show()
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
