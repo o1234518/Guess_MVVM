@@ -19,11 +19,11 @@ class RecordActivity : AppCompatActivity() {
             if(user_name.equals("")) {
                 user_name = "Guess"
             }
-            getSharedPreferences("Guess", MODE_PRIVATE)
-                .edit()
-                .putInt("REC_COUNTER", record)
-                .putString("REC_USER", user_name)
-                .apply()
+//            getSharedPreferences("Guess", MODE_PRIVATE)
+//                .edit()
+//                .putInt("REC_COUNTER", record)
+//                .putString("REC_USER", user_name)
+//                .apply()
             getSharedPreferences("Guess", MODE_PRIVATE).apply {
                 edit()
                     .apply{

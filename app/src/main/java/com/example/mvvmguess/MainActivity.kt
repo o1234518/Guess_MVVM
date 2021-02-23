@@ -49,6 +49,8 @@ class MainActivity : AppCompatActivity() {
                 .show()
         })
 
+        setLastInfo()
+
         findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { view ->
             viewModel.reset()
         }
@@ -58,6 +60,16 @@ class MainActivity : AppCompatActivity() {
             viewModel.guess(number)
         }
 
+    }
+
+    private fun setLastInfo() {
+        val lastPlayer = getSharedPreferences("Guess", MODE_PRIVATE).getString("REC_USER", "")
+
+        val lastRecord = getSharedPreferences("Guess", MODE_PRIVATE).getInt("REC_COUNTER", 0)
+        Log.i(TAG, "data : $lastPlayer , $lastRecord ");
+
+        tv_last_player.text = lastPlayer.toString()
+        tv_last_record.text = lastRecord.toString()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
